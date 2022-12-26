@@ -115,6 +115,55 @@ FCF_data = pd.DataFrame(FCF_data)
 FCF_data.set_index(PER_data1.index, inplace=True)
 FCF_data.columns = new_header
 # calculate average std for our data to get zscore to properly rank them
+
+class zscore(object):
+    """create a zscore for the serie"""
+    def __init__(self, data):
+        self.data=data
+        
+        
+        
+        
+    
+    def score(self):
+        mean =np.zeros((1,261))
+        mean = pd.DataFrame(mean)
+        mean.columns=new_header
+        for i in range(len(self.data.T)):
+            mean.iloc[0,i]=self.data.iloc[:,i].mean()
+        std=np.zeros((1,261))
+        std = pd.DataFrame(std)
+        std.columns = new_header
+        for i in range(len(self.data.T)):
+            std.iloc[0,i] = self.data.iloc[:,i].std()
+        zscore=np.zeros((502,261))
+        zscore = pd.DataFrame(zscore)
+        zscore.set_index(PER_data.index, inplace=True)
+        zscore.columns = new_header
+        for i in range(len(self.data.T)):
+            for j in range(len(self.data)):
+                zscore.iloc[j,i] = (self.data.iloc[j,i]-mean.iloc[0,i])/std.iloc[0,i]
+        self.zscore=zscore
+        return zscore
+
+        
+         
+    
+              
+   
+        
+    
+        
+        
+
+            
+    
+
+    
+    
+    
+    
+    
 PER_average=np.zeros((1,261))
 PER_average = pd.DataFrame(PER_average)
 PER_average.columns = new_header
