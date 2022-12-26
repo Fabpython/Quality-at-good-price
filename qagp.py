@@ -411,6 +411,8 @@ SR = excessReturn.mean()*12/volReturn
 skewness=return_df.skew()
 kurtosis=return_df.kurtosis()
 
+esohfséfu
+
 
 
 
