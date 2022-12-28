@@ -262,10 +262,10 @@ iW_up = pd.DataFrame(iW_up)
 iW_down  = pd.DataFrame(iW_down)
 i_returns_asset=np.zeros((30,252))
 i_returns_asset = pd.DataFrame(i_returns_asset)
-i_returns_port=np.zeros((1,252))
-i_returns_port = pd.DataFrame(i_returns_port)
-i_cum_returns=np.zeros((1,252))
-i_cum_returns = pd.DataFrame(i_cum_returns)
+i_returns_port1=np.zeros((1,252))
+i_returns_port1 = pd.DataFrame(i_returns_port)
+i_cum_returns1=np.zeros((1,252))
+i_cum_returns1 = pd.DataFrame(i_cum_returns)
 
 for i in range (252):
     iTop_Up_30names = integ_Top_Up_30[i].keys()
@@ -276,14 +276,14 @@ for i in range (252):
         
         i_returns_asset.iloc[j,i]= iW_up.iloc[j,i]*returns.loc[iTop_Up_30names].iloc[j,i+1]-(iW_down.iloc[j,i]*returns.loc[iTop_Down_30names].iloc[j,i+1])
                                                                                 
-    i_returns_port.iloc[0,i]=i_returns_asset.iloc[:,i].sum()
+    i_returns_port1.iloc[0,i]=i_returns_asset.iloc[:,i].sum()
     
     
     if i==0 :
-        i_cum_returns.iloc[0,i]=1+i_returns_port.iloc[0,i]
+        i_cum_returns1.iloc[0,i]=1+i_returns_port1.iloc[0,i]
         
     else :
-        i_cum_returns.iloc[0,i]=(1+i_returns_port.iloc[0,i])*i_cum_returns.iloc[0,i-1]
+        i_cum_returns1.iloc[0,i]=(1+i_returns_port1.iloc[0,i])*i_cum_returns1.iloc[0,i-1]
         
             
 plt.plot(i_cum_returns.iloc[0,:])
@@ -309,7 +309,7 @@ for i in range (251):
 TO_i.mean(axis=1)*12
 
 
-TC_i=0.002*TO_i
+TC_i=0.004*TO_i
 
 TC_i.insert(0,"",0)
 
@@ -324,7 +324,7 @@ for i in range (251):
     my_list_down=integ_Top_Down_30[i].keys()    
     my_list_down=my_list_down.tolist()        
     
-    for j in range (25):
+    for j in range (30):
         if my_list_up.count(integ_Top_Up_30[i+1].keys()[j])>0 and integ_Top_Up_30[i+1].keys()[j]==integ_Top_Up_30[i].keys()[j]:
             TO1_i.iloc[0,i]=TO1_i.iloc[0,i]
         elif my_list_up.count(integ_Top_Up_30[i+1].keys()[j])>0 and integ_Top_Up_30[i+1].keys()[j]!=integ_Top_Up_30[i].keys()[j]:
@@ -340,64 +340,46 @@ for i in range (251):
         else:
             TO1_i.iloc[0,i]=TO_i.iloc[0,i]+iW_down.iloc[j,i]
 
-TC1_i=0.002*TO1_i
+TC1_i=0.004*TO1_i
 TC1_i.insert(0,"",0)
 TC1_i.columns=FCF_data.iloc[:,0:252].columns
 
-TO1_i.mean(axis=1)*12
+
 
 #Equally Weighted integrated with transaction costs
-iW_up=np.zeros((30,252))
-iW_down = np.zeros((30,252))
-iW_up = pd.DataFrame(iW_up)
-iW_down  = pd.DataFrame(iW_down)
-i_returns_asset=np.zeros((30,252))
-i_returns_asset = pd.DataFrame(i_returns_asset)
-i_returns_port=np.zeros((1,252))
-i_returns_port = pd.DataFrame(i_returns_port)
-i_cum_returns=np.zeros((1,252))
-i_cum_returns = pd.DataFrame(i_cum_returns)
-returns_long_ai =np.zeros((30,252))
-returns_long_ai = pd.DataFrame(returns_long_ai)
-returns_longi =np.zeros((1,252))
-returns_longi = pd.DataFrame(returns_longi)
-returns_short_ai =np.zeros((30,252))
-returns_short_ai = pd.DataFrame(returns_short_ai)
-returns_shorti =np.zeros((1,252))
-returns_shorti = pd.DataFrame(returns_shorti)
-cum_returns_longi=np.zeros((1,252))
-cum_returns_longi = pd.DataFrame(cum_returns_longi)
-cum_returns_shorti=np.zeros((1,252))
-cum_returns_shorti = pd.DataFrame(cum_returns_shorti)
-for i in range (252):
-    iTop_Up_30names = integ_Top_Up_30[i].keys()
-    iTop_Down_30names = integ_Top_Down_30[i].keys()
-    for j in range (30):
-        iW_up.iloc[j,i]=1/30
-        iW_down.iloc[j,i]=1/30
-        
-        i_returns_asset.iloc[j,i]= iW_up.iloc[j,i]*returns.loc[iTop_Up_30names].iloc[j,i+1]-iW_down.iloc[j,i]*returns.loc[iTop_Down_30names].iloc[j,i+1]
-        returns_long_ai.iloc[j,i]= iW_up.iloc[j,i]*returns.loc[iTop_Up_30names].iloc[j,i+1]
-        returns_short_ai.iloc[j,i]= -1*iW_up.iloc[j,i]*returns.loc[iTop_Down_30names].iloc[j,i+1]                                                                             
-    i_returns_port.iloc[0,i]=i_returns_asset.iloc[:,i].sum()-TC_i.iloc[0,i]
-    returns_longi.iloc[0,i]=returns_long_ai.iloc[:,i].sum()-TC_i.iloc[0,i]/2
-    returns_shorti.iloc[0,i]=returns_short_ai.iloc[:,i].sum()-TC_i.iloc[0,i]/2
+
+i_returns_port.columns = TC_i.columns
+i_returns_port = i_returns_port-TC_i
+for i in range (252):    
     if i==0 :
         i_cum_returns.iloc[0,i]=1+i_returns_port.iloc[0,i]
-        cum_returns_longi.iloc[0,i]=1+returns_longi.iloc[0,i]
-        cum_returns_shorti.iloc[0,i]=1+returns_shorti.iloc[0,i]
+        
     else :
         i_cum_returns.iloc[0,i]=(1+i_returns_port.iloc[0,i])*i_cum_returns.iloc[0,i-1]
-        cum_returns_longi.iloc[0,i]=(1+returns_longi.iloc[0,i])*cum_returns_longi.iloc[0,i-1]
-        cum_returns_shorti.iloc[0,i]=(1+returns_shorti.iloc[0,i])*cum_returns_shorti.iloc[0,i-1]      
 plt.plot(i_cum_returns.iloc[0,:])
 
+#rank weighted with transaction costs
+
+
+i_returns_port1.columns = TC_i.columns
+i_returns_port1 = i_returns_port-TC1_i
+for i in range (252):    
+    if i==0 :
+        i_cum_returns1.iloc[0,i]=1+i_returns_port1.iloc[0,i]
+        
+    else :
+        i_cum_returns1.iloc[0,i]=(1+i_returns_port1.iloc[0,i])*i_cum_returns1.iloc[0,i-1]
+plt.plot(i_cum_returns1.iloc[0,:])
+
+
+                      
+                      
 
 #stats for integrated EW
 from scipy.stats import skew, kurtosis
 import pandas_datareader as web
-risk_free = web.DataReader('DTB3', 'fred', start='2001-1-1', end='2021-12-01')
-risk_free = risk_free.resample('MS').first()/100
+risk_free = web.DataReader('DTB3', 'fred', start='2006-1-1', end='2021-12-01')
+risk_free = risk_free.resample('MS').first()/1200
 print(risk_free)
 
 risk_free.columns = ['RF']
@@ -410,8 +392,283 @@ volReturn = return_df.std()*(12**0.5)
 SR = excessReturn.mean()*12/volReturn
 skewness=return_df.skew()
 kurtosis=return_df.kurtosis()
+turnover = TO_i.mean(axis=1)*12
 
-esohfséfu
+risk_free.columns = ['RF']
+return_df1= i_returns_port1.T
+return_df1.index=risk_free.index
+excessReturn1 = return_df1.sub(risk_free['RF'], axis=0)
+geometric_mean1 = ((1+return_df1).cumprod().iloc[-1]**(1/len(return_df1))-1)
+meanReturn1 = return_df1.mean()*12
+volReturn1 = return_df1.std()*(12**0.5)
+SR1 = excessReturn1.mean()*12/volReturn1
+skewness1=return_df1.skew()
+kurtosis1=return_df1.kurtosis()
+turnover1 = TO1_i.mean(axis=1)*12
+
+
+import scipy
+from scipy.optimize import minimize
+
+# Optimization parameters
+numberOfAssets=30
+e = np.ones((numberOfAssets, 1))
+
+# set the constraints
+Aeq = e.T
+beq = 1
+eq_constraint = lambda x: np.dot(Aeq, x) - beq
+cons = ({'type': 'eq', 'fun': eq_constraint})
+lub = (0, 1)
+bnds = ((lub, ) * numberOfAssets)
+
+    
+x0 = np.ones((numberOfAssets, 1)) / numberOfAssets
+
+Sigma = np.cov(returns.iloc[:,i:60+1], bias=True)
+
+def ERCfunc(w, Sigma):
+    x = 0
+    R = np.dot(Sigma, w)
+    for i in range(len(w)):
+        for j in range(len(w)):
+            x = x + (w[i]*R[i] - w[j]*R[j])**2
+    return x
+
+funERC = lambda x: ERCfunc(x, Sigma)
+# run the optimization
+resERC = minimize(funERC, x0, method='SLSQP', tol=1e-8, bounds=bnds, constraints=cons)
+wERC = resERC.x.reshape((numberOfAssets, 1))
+with np.printoptions(precision=4, suppress=True):
+    print('wERC = ')
+    print(wERC)
+    
+sigmaERC = (wERC.T @ Sigma @ wERC) ** 0.5
+print(f"\nVolatility = {sigmaERC[0,0]:.2%}")
+
+#divRatioERC = (wERC.T @ sigmaVec) / (wERC.T @ Sigma @ wERC) ** 0.5
+#print(f"\nDiversification ratio = {divRatioERC[0,0]:.2f}")
+
+#rank weighted integrated portfolio without tc
+wERCup=np.zeros((30,192))
+wERCdown = np.zeros((30,192))
+wERCup = pd.DataFrame(wERCup)
+wERCdown  = pd.DataFrame(wERCdown)
+i_returns_asset=np.zeros((30,192))
+i_returns_asset = pd.DataFrame(i_returns_asset)
+i_returns_port2=np.zeros((1,192))
+i_returns_port2 = pd.DataFrame(i_returns_port2)
+i_cum_returns2=np.zeros((1,192))
+i_cum_returns2 = pd.DataFrame(i_cum_returns2)
+numberOfAssets=30
+for i in range (192):
+    iTop_Up_30names = integ_Top_Up_30[i+60].keys()
+    iTop_Down_30names = integ_Top_Down_30[i+60].keys()
+    SigmaUp = np.cov(returns.loc[iTop_Up_30names].iloc[:,i:60+i], bias=True)
+    SigmaDown = np.cov(returns.loc[iTop_Down_30names].iloc[:,i:60+i], bias=True)
+    funERC = lambda x: ERCfunc(x, SigmaUp)
+    # run the optimization
+    resERC = minimize(funERC, x0, method='SLSQP', tol=1e-8, bounds=bnds, constraints=cons)
+    wERCup.iloc[:,i] = resERC.x.reshape((numberOfAssets, 1))
+    funERC = lambda x: ERCfunc(x, SigmaDown)
+    # run the optimization
+    resERC = minimize(funERC, x0, method='SLSQP', tol=1e-8, bounds=bnds, constraints=cons)
+    wERCdown.iloc[:,i] = resERC.x.reshape((numberOfAssets, 1))
+    
+    for j in range (30):
+        
+        
+        i_returns_asset.iloc[j,i]= wERCup.iloc[j,i]*returns.loc[iTop_Up_30names].iloc[j,i+61]-(wERCdown.iloc[j,i]*returns.loc[iTop_Down_30names].iloc[j,i+61])
+                                                                                
+    i_returns_port2.iloc[0,i]=i_returns_asset.iloc[:,i].sum()
+    if i==0 :
+        i_cum_returns2.iloc[0,i]=1+i_returns_port2.iloc[0,i]
+        
+    else :
+        i_cum_returns2.iloc[0,i]=(1+i_returns_port2.iloc[0,i])*i_cum_returns2.iloc[0,i-1]
+        
+plt.plot(i_cum_returns2.iloc[0,:])
+    
+TO2_i=np.zeros((1,191))
+TO2_i = pd.DataFrame(TO2_i)
+for i in range (191):
+    my_list_up=integ_Top_Up_30[i+60].keys()    
+    my_list_up=my_list_up.tolist()
+    my_list_down=integ_Top_Down_30[i+60].keys()    
+    my_list_down=my_list_down.tolist()        
+    
+    for j in range (30):
+        if my_list_up.count(integ_Top_Up_30[i+61].keys()[j])>0 and integ_Top_Up_30[i+61].keys()[j]==integ_Top_Up_30[i+60].keys()[j]:
+            TO2_i.iloc[0,i]=TO2_i.iloc[0,i]
+        elif my_list_up.count(integ_Top_Up_30[i+61].keys()[j])>0 and integ_Top_Up_30[i+61].keys()[j]!=integ_Top_Up_30[i+60].keys()[j]:
+            TO2_i.iloc[0,i]=TO2_i.iloc[0,i]+(wERCup.iloc[my_list_up.index(integ_Top_Up_30[i+61].keys()[j]),i]-wERCup.iloc[j,i])*2
+        else:
+            TO2_i.iloc[0,i]=TO2_i.iloc[0,i]+wERCup.iloc[j,i]
+            
+            
+        if my_list_down.count(integ_Top_Down_30[i+61].keys()[j])>0 and integ_Top_Down_30[i+61].keys()[j]==integ_Top_Down_30[i+60].keys()[j]:
+            TO2_i.iloc[0,i]=TO2_i.iloc[0,i]
+        elif my_list_down.count(integ_Top_Down_30[i+61].keys()[j])>0 and integ_Top_Down_30[i+61].keys()[j]!=integ_Top_Down_30[i+60].keys()[j]:
+            TO2_i.iloc[0,i]=TO2_i.iloc[0,i]+(wERCdown.iloc[my_list_down.index(integ_Top_Down_30[i+61].keys()[j]),i]-wERCdown.iloc[j,i])*2
+        else:
+            TO2_i.iloc[0,i]=TO2_i.iloc[0,i]+wERCdown.iloc[j,i]
+
+TC2_i=0.004*TO2_i
+TC2_i.insert(0,"",0)
+TC2_i.columns=FCF_data.iloc[:,60:252].columns  
+
+
+i_returns_port2.columns = TC2_i.columns
+i_returns_port2 = i_returns_port2-TC2_i
+for i in range (192):    
+    if i==0 :
+        i_cum_returns2.iloc[0,i]=1+i_returns_port2.iloc[0,i]
+        
+    else :
+        i_cum_returns2.iloc[0,i]=(1+i_returns_port2.iloc[0,i])*i_cum_returns2.iloc[0,i-1]
+plt.plot(i_cum_returns2.iloc[0,:])         
+
+risk_free.columns = ['RF']
+return_df2= i_returns_port2.T
+return_df2.index=risk_free.index
+excessReturn2 = return_df2.sub(risk_free['RF'], axis=0)
+geometric_mean2 = ((1+return_df2).cumprod().iloc[-1]**(1/len(return_df1))-1)
+meanReturn2 = return_df2.mean()*12
+volReturn2 = return_df2.std()*(12**0.5)
+SR2 = excessReturn2.mean()*12/volReturn2
+skewness2=return_df2.skew()
+kurtosis2=return_df2.kurtosis()
+turnover2 = TO2_i.mean(axis=1)*12
+
+
+# Optimization parameters
+numberOfAssets=30
+e = np.ones((numberOfAssets, 1))
+
+# set the constraints
+Aeq = e.T
+beq = 1
+eq_constraint = lambda x: np.dot(Aeq, x) - beq
+cons = ({'type': 'eq', 'fun': eq_constraint})
+lub = (0, 1)
+bnds = ((lub, ) * numberOfAssets)
+
+    
+x0 = np.ones((numberOfAssets, 1)) / numberOfAssets
+sigmaVec =np.diagonal(SigmaUp)
+funMDP = lambda x: (-1*x.T @ sigmaVec) / ((x.T @ SigmaUp @ x) ** 0.5)
+# run the optimization
+resMDP = minimize(funMDP, x0, method='SLSQP', tol=1e-8, bounds=bnds, constraints=cons)
+wMDP = resMDP.x.reshape((numberOfAssets, 1))
+with np.printoptions(precision=4, suppress=True):
+    print('wMDP = ')
+    print(wMDP)
+    
+sigmaMDP = (wMDP.T @ Sigma @ wMDP) ** 0.5
+print(f"\nVolatility = {sigmaMDP[0,0]:.2%}")
+
+divRatioMDP = -1 * resMDP.fun
+print(f"\nDiversification ratio = {divRatioMDP[0]:.2f}")
+
+wMDPup=np.zeros((30,192))
+wMDPdown = np.zeros((30,192))
+wMDPup = pd.DataFrame(wMDPup)
+wMDPdown  = pd.DataFrame(wMDPdown)
+i_returns_asset=np.zeros((30,192))
+i_returns_asset = pd.DataFrame(i_returns_asset)
+i_returns_port3=np.zeros((1,192))
+i_returns_port3 = pd.DataFrame(i_returns_port3)
+i_cum_returns3=np.zeros((1,192))
+i_cum_returns3 = pd.DataFrame(i_cum_returns3)
+numberOfAssets=30
+for i in range (192):
+    iTop_Up_30names = integ_Top_Up_30[i+60].keys()
+    iTop_Down_30names = integ_Top_Down_30[i+60].keys()
+    SigmaUp = np.cov(returns.loc[iTop_Up_30names].iloc[:,i:60+i], bias=True)
+    SigmaDown = np.cov(returns.loc[iTop_Down_30names].iloc[:,i:60+i], bias=True)
+    sigmaVecup =np.diagonal(SigmaUp)
+    sigmaVecdown =np.diagonal(SigmaDown)
+    funMDP = lambda x: (-1*x.T @ sigmaVecup) / ((x.T @ SigmaUp @ x) ** 0.5)
+    # run the optimization
+    resMDP = minimize(funMDP, x0, method='SLSQP', tol=1e-8, bounds=bnds, constraints=cons)
+    wMDPup.iloc[:,i] = resMDP.x.reshape((numberOfAssets, 1))
+    funMDP = lambda x: (-1*x.T @ sigmaVecdown) / ((x.T @ SigmaDown @ x) ** 0.5)
+    # run the optimization
+    resMDP = minimize(funMDP, x0, method='SLSQP', tol=1e-8, bounds=bnds, constraints=cons)
+    wMDPdown.iloc[:,i] = resMDP.x.reshape((numberOfAssets, 1)) 
+    for j in range (30):
+        
+        
+        i_returns_asset.iloc[j,i]= wMDPup.iloc[j,i]*returns.loc[iTop_Up_30names].iloc[j,i+61]-(wMDPdown.iloc[j,i]*returns.loc[iTop_Down_30names].iloc[j,i+61])
+                                                                                
+    i_returns_port3.iloc[0,i]=i_returns_asset.iloc[:,i].sum()
+    if i==0 :
+        i_cum_returns3.iloc[0,i]=1+i_returns_port3.iloc[0,i]
+        
+    else :
+        i_cum_returns3.iloc[0,i]=(1+i_returns_port3.iloc[0,i])*i_cum_returns3.iloc[0,i-1]
+        
+plt.plot(i_cum_returns3.iloc[0,:])
+
+#adding TC
+TO3_i=np.zeros((1,191))
+TO3_i = pd.DataFrame(TO3_i)
+for i in range (191):
+    my_list_up=integ_Top_Up_30[i+60].keys()    
+    my_list_up=my_list_up.tolist()
+    my_list_down=integ_Top_Down_30[i+60].keys()    
+    my_list_down=my_list_down.tolist()        
+    
+    for j in range (30):
+        if my_list_up.count(integ_Top_Up_30[i+61].keys()[j])>0 and integ_Top_Up_30[i+61].keys()[j]==integ_Top_Up_30[i+60].keys()[j]:
+            TO3_i.iloc[0,i]=TO3_i.iloc[0,i]
+        elif my_list_up.count(integ_Top_Up_30[i+61].keys()[j])>0 and integ_Top_Up_30[i+61].keys()[j]!=integ_Top_Up_30[i+60].keys()[j]:
+            TO3_i.iloc[0,i]=TO3_i.iloc[0,i]+(wMDPup.iloc[my_list_up.index(integ_Top_Up_30[i+61].keys()[j]),i]-wMDPup.iloc[j,i])*2
+        else:
+            TO3_i.iloc[0,i]=TO3_i.iloc[0,i]+wMDPup.iloc[j,i]
+            
+            
+        if my_list_down.count(integ_Top_Down_30[i+61].keys()[j])>0 and integ_Top_Down_30[i+61].keys()[j]==integ_Top_Down_30[i+60].keys()[j]:
+            TO3_i.iloc[0,i]=TO3_i.iloc[0,i]
+        elif my_list_down.count(integ_Top_Down_30[i+61].keys()[j])>0 and integ_Top_Down_30[i+61].keys()[j]!=integ_Top_Down_30[i+60].keys()[j]:
+            TO3_i.iloc[0,i]=TO3_i.iloc[0,i]+(wMDPdown.iloc[my_list_down.index(integ_Top_Down_30[i+61].keys()[j]),i]-wMDPdown.iloc[j,i])*2
+        else:
+            TO3_i.iloc[0,i]=TO3_i.iloc[0,i]+wMDPdown.iloc[j,i]
+
+TC3_i=0.004*TO3_i
+TC3_i.insert(0,"",0)
+TC3_i.columns=FCF_data.iloc[:,60:252].columns
+
+i_returns_port3.columns = TC3_i.columns
+i_returns_port3 = i_returns_port3-TC3_i
+for i in range (192):    
+    if i==0 :
+        i_cum_returns3.iloc[0,i]=1+i_returns_port3.iloc[0,i]
+        
+    else :
+        i_cum_returns3.iloc[0,i]=(1+i_returns_port3.iloc[0,i])*i_cum_returns3.iloc[0,i-1]
+plt.plot(i_cum_returns3.iloc[0,:])
+
+
+risk_free.columns = ['RF']
+return_df3= i_returns_port3.T
+return_df3.index=risk_free.index
+excessReturn3 = return_df2.sub(risk_free['RF'], axis=0)
+geometric_mean3 = ((1+return_df2).cumprod().iloc[-1]**(1/len(return_df1))-1)
+meanReturn3 = return_df3.mean()*12
+volReturn3 = return_df3.std()*(12**0.5)
+SR3 = excessReturn3.mean()*12/volReturn3
+skewness3=return_df3.skew()
+kurtosis3=return_df3.kurtosis()
+
+
+
+    
+#min Var
+funMinVar = lambda x: x.T @ Sigma @ x
+# run the optimization
+resMinVar = minimize(funMinVar, x0, method='SLSQP', tol=1e-8, bounds=bnds, constraints=cons)
+wMinVar = resMinVar.x.reshape((numberOfAssets, 1))
 
 
 
