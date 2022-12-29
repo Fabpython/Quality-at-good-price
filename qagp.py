@@ -774,6 +774,32 @@ plt.plot( i_cum_returns2.iloc[0,:], color='g', label='ERC')
 plt.plot( i_cum_returns4.iloc[0,:], color='y', label='MV')
 plt.legend();
 
+
+
+risk_free.columns = ['RF']
+return_df= i_returns_port_.T
+return_df.index=risk_free.index
+excessReturn = return_df.sub(risk_free['RF'], axis=0)
+geometric_mean = ((1+return_df).cumprod().iloc[-1]**(1/len(return_df))-1)
+meanReturn = return_df.mean()*12
+volReturn = return_df.std()*(12**0.5)
+SR = excessReturn.mean()*12/volReturn
+skewness=return_df.skew()
+kurtosis=return_df.kurtosis()
+turnover = TO_i.mean(axis=1)*12
+
+risk_free.columns = ['RF']
+return_df1= i_returns_port_1.T
+return_df1.index=risk_free.index
+excessReturn1 = return_df1.sub(risk_free['RF'], axis=0)
+geometric_mean1 = ((1+return_df1).cumprod().iloc[-1]**(1/len(return_df1))-1)
+meanReturn1 = return_df1.mean()*12
+volReturn1 = return_df1.std()*(12**0.5)
+SR1 = excessReturn1.mean()*12/volReturn1
+skewness1=return_df1.skew()
+kurtosis1=return_df1.kurtosis()
+turnover1 = TO1_i.mean(axis=1)*12
+
 Sharpe_ratio =pd.DataFrame(pd.concat([SR, SR1, SR2, SR4])).T
 Annualized_returns =pd.DataFrame(pd.concat([meanReturn, meanReturn1, meanReturn2, meanReturn4])).T
 Volatility = pd.DataFrame(pd.concat([volReturn, volReturn1, volReturn2, volReturn4])).T
